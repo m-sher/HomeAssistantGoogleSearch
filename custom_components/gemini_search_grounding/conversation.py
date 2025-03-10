@@ -396,7 +396,7 @@ class GoogleGenerativeAIConversationEntity(
                     ),
                 ),
             ],
-            tools=([self._search_tool] + tools) or None,
+            tools=[self._search_tool],
             system_instruction=prompt if supports_system_instruction else None,
             automatic_function_calling=AutomaticFunctionCallingConfig(
                 disable=True, maximum_remote_calls=None
