@@ -17,6 +17,8 @@ from google.genai.types import (
     SafetySetting,
     Schema,
     Tool,
+    GoogleSearchRetrieval,
+    DynamicRetrievalConfig,
 )
 from voluptuous_openapi import convert
 
@@ -34,6 +36,7 @@ from .const import (
     CONF_HARASSMENT_BLOCK_THRESHOLD,
     CONF_HATE_BLOCK_THRESHOLD,
     CONF_MAX_TOKENS,
+    CONF_DYNAMIC_THRESHOLD,
     CONF_PROMPT,
     CONF_SEXUAL_BLOCK_THRESHOLD,
     CONF_TEMPERATURE,
@@ -44,6 +47,7 @@ from .const import (
     RECOMMENDED_CHAT_MODEL,
     RECOMMENDED_HARM_BLOCK_THRESHOLD,
     RECOMMENDED_MAX_TOKENS,
+    RECOMMENDED_DYNAMIC_THRESHOLD,
     RECOMMENDED_TEMPERATURE,
     RECOMMENDED_TOP_K,
     RECOMMENDED_TOP_P,
@@ -230,6 +234,15 @@ class GoogleGenerativeAIConversationEntity(
         """Initialize the agent."""
         self.entry = entry
         self._genai_client = entry.runtime_data
+        self._search_tool = Tool(
+            google_search=GoogleSearchRetrieval(
+                dynamic_retrieval_config=DynamicRetrievalConfig(
+                    dynamic_threshold=entry.options.get(
+                        CONF_DYNAMIC_THRESHOLD, RECOMMENDED_DYNAMIC_THRESHOLD
+                    ),
+                )
+            )
+        )
         self._attr_unique_id = entry.entry_id
         self._attr_device_info = dr.DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
@@ -383,7 +396,7 @@ class GoogleGenerativeAIConversationEntity(
                     ),
                 ),
             ],
-            tools=tools or None,
+            tools=self._search_tool or tools or None,
             system_instruction=prompt if supports_system_instruction else None,
             automatic_function_calling=AutomaticFunctionCallingConfig(
                 disable=True, maximum_remote_calls=None
