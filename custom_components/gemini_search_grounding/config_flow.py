@@ -319,9 +319,7 @@ async def google_generative_ai_config_option_schema(
             ): int,
             vol.Optional(
                 CONF_DYNAMIC_THRESHOLD,
-                description={
-                    "suggested_value": options.get(CONF_DYNAMIC_THRESHOLD, RECOMMENDED_DYNAMIC_THRESHOLD)
-                },
+                description={"suggested_value": options.get(CONF_DYNAMIC_THRESHOLD)},
                 default=RECOMMENDED_DYNAMIC_THRESHOLD,
             ): NumberSelector(NumberSelectorConfig(min=0, max=1, step=0.05)),
             vol.Optional(
