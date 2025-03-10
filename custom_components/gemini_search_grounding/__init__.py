@@ -6,7 +6,6 @@ from pathlib import Path
 
 from google import genai  # type: ignore[attr-defined]
 from google.genai.errors import APIError, ClientError
-from google.genai.types import Tool, GenerateContentConfig, GoogleSearchRetrieval, DynamicRetrievalConfig
 from requests.exceptions import Timeout
 import voluptuous as vol
 
@@ -32,8 +31,6 @@ from .const import (
     CONF_CHAT_MODEL,
     CONF_PROMPT,
     DOMAIN,
-    CONF_DYNAMIC_THRESHOLD,
-    RECOMMENDED_DYNAMIC_THRESHOLD,
     RECOMMENDED_CHAT_MODEL,
     TIMEOUT_MILLIS,
 )
@@ -91,22 +88,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         await hass.async_add_executor_job(append_files_to_prompt)
 
         try:
-            search_tool = Tool(
-                google_search=GoogleSearchRetrieval(
-                    dynamic_retrieval_config=DynamicRetrievalConfig(
-                        dynamic_threshold=config_entry.options.get(
-                            CONF_DYNAMIC_THRESHOLD, RECOMMENDED_DYNAMIC_THRESHOLD
-                        ),
-                    )
-                )
-            )
-
             response = await client.aio.models.generate_content(
-                model=config_entry.options.get(CONF_CHAT_MODEL, RECOMMENDED_CHAT_MODEL),
-                contents=prompt_parts,
-                config=GenerateContentConfig(system_instruction=CONF_PROMPT,
-                                             tools=[search_tool],
-                                             response_modalities=["TEXT"]),
+                model=RECOMMENDED_CHAT_MODEL, contents=prompt_parts
             )
         except (
             APIError,
