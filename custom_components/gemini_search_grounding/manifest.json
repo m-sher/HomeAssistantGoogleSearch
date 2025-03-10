@@ -5,9 +5,10 @@
   "codeowners": ["@m-sher, @tronikos"],
   "config_flow": true,
   "dependencies": ["conversation"],
-  "documentation": "https://www.home-assistant.io/integrations/google_generative_ai_conversation",
+  "documentation": "https://github.com/m-sher/HomeAssistantGoogleSearch",
   "integration_type": "service",
   "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/m-sher/HomeAssistantGoogleSearch/issues",
   "requirements": ["google-genai==1.1.0"],
-  "version": "v0.0.1"
+  "version": "v0.0.3"
 }
