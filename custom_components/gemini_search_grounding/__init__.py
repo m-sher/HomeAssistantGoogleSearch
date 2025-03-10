@@ -102,7 +102,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             )
 
             response = await client.aio.models.generate_content(
-                model=RECOMMENDED_CHAT_MODEL, contents=prompt_parts,
+                model=config_entry.options.get(CONF_CHAT_MODEL, RECOMMENDED_CHAT_MODEL),
+                contents=prompt_parts,
                 config=GenerateContentConfig(system_instruction=CONF_PROMPT,
                                              tools=[search_tool],
                                              response_modalities=["TEXT"]),
