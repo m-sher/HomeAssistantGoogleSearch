@@ -289,6 +289,28 @@ class GoogleGenerativeAIConversationEntity(
 
         return tool_name if tool_name != "HasListAddItem" else "HassListAddItem"
 
+    async def async_process(
+
+        self, user_input: conversation.ConversationInput
+
+    ) -> conversation.ConversationResult:
+
+        """Process a sentence."""
+
+        with (
+
+            chat_session.async_get_chat_session(
+
+                self.hass, user_input.conversation_id
+
+            ) as session,
+
+            conversation.async_get_chat_log(self.hass, session, user_input) as chat_log,
+
+        ):
+
+            return await self._async_handle_message(user_input, chat_log)
+
     async def _async_handle_message(
         self,
         user_input: conversation.ConversationInput,
@@ -477,7 +499,6 @@ class GoogleGenerativeAIConversationEntity(
         return conversation.ConversationResult(
             response=response,
             conversation_id=chat_log.conversation_id,
-            continue_conversation=chat_log.continue_conversation,
         )
 
     async def _async_entry_update_listener(
